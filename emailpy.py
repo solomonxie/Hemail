@@ -1,10 +1,6 @@
 import poplib
 
-from email.parser import Parser
-from email.header import decode_header
-from email.utils import parseaddr
-
-
+from mail import Mail
 
 class EmailPy:
     def __init__(self, addr=None, psw=None, pop3=None):
@@ -41,50 +37,32 @@ class EmailPy:
         print('Logged out from server [Bye].')
     
 
-    def __get_mails(self):
-        response, _all_mails_raw, octets = self.server.list()
+    def get_all_mails(self):
+        # list() returns [response, raw, octets]
+        _all_mails_raw = self.server.list()[1]
         #print(_all_mails_raw)
         for index in range(len(_all_mails_raw)):
-            index = len(_all_mails_raw)
-            response, _lines, octets = self.server.retr(index)
-            # lines存储了邮件的原始文本的每一行,
-            # 可以获得整个邮件的原始文本:
-            _mail_raw = b'\r\n'.join(_lines).decode('utf-8')
-            # Parse Raw mails into Message Objects
-            _mail = Parser().parsestr(_mail_raw)
-            self.mails.append(_mail)
-    
-    
-    def read_mails(self):
-        if len(self.mails) < 1:
-            self.__get_mails()
-        for mail in self.mails:
-            _from = self.__decode_mail_text(mail.get('From'))
-            _to = self.__decode_mail_text(mail.get('To'))
-            _subject = self.__decode_mail_text(mail.get('Subject'))
-            print(_subject)
+            _mail_raw = self.__retrive_a_mail(index)
+        self.mails.append( Mail(_mail_raw) )
     
 
-    def __decode_mail_text(self, raw):
-        """ Decode mail raw string to readable text"""
-        content, charset = decode_header(raw)[0]
-        text = content.decode(charset) if charset else None
-        return text
+    def __retrive_a_mail(self, index):
+        # retr() returns [response, lines of content, octets]
+        _lines = self.server.retr(index)[1]
+        return b'\r\n'.join(_lines).decode('utf-8')
+    
 
-    
-    def __delete_mail(self, index):
-        # Delete mail from server
-        self.server.dele(index)
-    
+    def export_all_mails(self):
+        pass
     
     def get_last_mails(self, amount):
         pass
     
-    def get_all_mails(self):
-        pass
-    
-    def export_all_mails(self):
-        pass
     
     def export_last_mails(self, amount):
         pass
+
+
+    def __delete_a_mail(self, index):
+        # Delete mail from server
+        self.server.dele(index)
