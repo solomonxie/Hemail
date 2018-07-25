@@ -16,7 +16,9 @@ def main():
     _re = servers['receivers'][0]
     
     server = EmailPy(_re['email'], _re['password'], _re['server'])
-    print(server.email_address)
+    server.login()
+    server.read_mails()
+    server.logout()
 
 if __name__ == '__main__':
     main()
