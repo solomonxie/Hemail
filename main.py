@@ -1,0 +1,22 @@
+
+
+import os
+import json
+from emailpy import EmailPy
+
+def main():
+    # Load email server infomations
+    path = './email-servers.json'
+    if os.path.islink(path) is True:
+        path = os.readlink(path)
+    with open(path, 'r') as f:
+        servers = json.loads(f.read())
+
+    # Choose a "Receiver Server" which we're gonna download from
+    _re = servers['receivers'][0]
+    
+    server = EmailPy(_re['email'], _re['password'], _re['server'])
+    print(server.email_address)
+
+if __name__ == '__main__':
+    main()
