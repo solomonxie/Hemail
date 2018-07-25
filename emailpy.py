@@ -12,14 +12,9 @@ class EmailPy:
         self.email_password = psw
         self.pop3 = pop3
         self.server = None
-
         self.mails = []
-
-        self.__login()
-        self.__get_mails()
-        self.__logout()
     
-    def __login(self):
+    def login(self):
         # Connect with server
         _server = poplib.POP3(self.pop3)
         # Print welcome message
@@ -39,7 +34,7 @@ class EmailPy:
 
         self.server = _server
     
-    def __logout(self):
+    def logout(self):
         # Close connection with server
         self.server.quit()
         self.server = None
@@ -48,7 +43,7 @@ class EmailPy:
 
     def __get_mails(self):
         response, _all_mails_raw, octets = self.server.list()
-        print(_all_mails_raw)
+        #print(_all_mails_raw)
         for index in range(len(_all_mails_raw)):
             index = len(_all_mails_raw)
             response, _lines, octets = self.server.retr(index)
@@ -56,8 +51,26 @@ class EmailPy:
             # 可以获得整个邮件的原始文本:
             _mail_raw = b'\r\n'.join(_lines).decode('utf-8')
             # Parse Raw mails into Message Objects
-            _mail = Mail(_mail_raw)
+            _mail = Parser().parsestr(_mail_raw)
             self.mails.append(_mail)
+    
+    
+    def read_mails(self):
+        if len(self.mails) < 1:
+            self.__get_mails()
+        for mail in self.mails:
+            _from = self.__decode_mail_text(mail.get('From'))
+            _to = self.__decode_mail_text(mail.get('To'))
+            _subject = self.__decode_mail_text(mail.get('Subject'))
+            print(_subject)
+    
+
+    def __decode_mail_text(self, raw):
+        """ Decode mail raw string to readable text"""
+        content, charset = decode_header(raw)[0]
+        text = content.decode(charset) if charset else None
+        return text
+
     
     def __delete_mail(self, index):
         # Delete mail from server
