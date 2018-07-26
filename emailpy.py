@@ -40,16 +40,22 @@ class EmailPy:
     def get_all_mails(self):
         # list() returns [response, raw, octets]
         _all_mails_raw = self.server.list()[1]
-        #print(_all_mails_raw)
-        for index in range(len(_all_mails_raw)):
-            _mail_raw = self.__retrive_a_mail(index)
-        self.mails.append( Mail(_mail_raw) )
+
+        print('Downloaded mail list [OK].')
+
+        for index in range(1, len(_all_mails_raw)):
+            _mail = Mail( self.__retrive_a_mail(index) )
+            self.mails.append( _mail )
     
 
     def __retrive_a_mail(self, index):
         # retr() returns [response, lines of content, octets]
         _lines = self.server.retr(index)[1]
-        return b'\r\n'.join(_lines).decode('utf-8')
+        _mail_raw = b'\r\n'.join(_lines).decode('utf-8')
+
+        print('Downloaded a mail [OK].')
+
+        return _mail_raw
     
 
     def export_all_mails(self):
