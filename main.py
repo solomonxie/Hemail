@@ -17,7 +17,7 @@ def main():
     
     server = EmailPy(_re['email'], _re['password'], _re['server'])
     server.login()
-    # server.read_headers()
+    server.get_all_mails()
     server.logout()
 
 if __name__ == '__main__':
