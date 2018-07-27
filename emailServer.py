@@ -2,10 +2,18 @@ import poplib
 
 from mail import Mail
 
-class EmailPy:
-    def __init__(self, addr=None, psw=None, pop3=None):
-        self.email_address = addr
-        self.email_password = psw
+class EmailServer:
+    """
+    Connect with Email Server, inc:
+    - Login, logout
+    - Retrive mail list
+    - Retrive specific mail
+    Not including:
+    - ✗ Mail parsing
+    """
+    def __init__(self, address=None, password=None, pop3=None):
+        self.email_address = address
+        self.email_password = password
         self.pop3 = pop3
         self.server = None
         self.count = 0
@@ -30,6 +38,12 @@ class EmailPy:
         # print('Messages: %s. Size: %s' % server.stat())
 
         self.server = _server
+
+        # Get Email Server states
+        # list() returns [response, raw, octets]
+        _all_mails_raw = self.server.list()[1]
+        self.count = len(_all_mails_raw)
+        print('Download the whole mail list [OK].')
     
     def logout(self):
         # Close connection with server
@@ -39,30 +53,28 @@ class EmailPy:
     
 
     def get_all_mails(self):
-        # list() returns [response, raw, octets]
-        _all_mails_raw = self.server.list()[1]
-        self.count = len(_all_mails_raw)
-        print('Download the whole mail list [OK].')
+        self.get_last_mails(self.count)
+    
 
-        for index in reversed(range(self.count)):
-            _mail = Mail( self.__retrive_a_mail(index+1) )
+    def get_last_mails(self, amount):
+        # Make up a reversed index-list,
+        # etc, mail list is [3,2,1] but we onlly need [3,2]
+        for index in range(self.count, self.count-amount, -1):
+            _mail = Mail( self.__retrive_a_mail(index) )
             self.mails.append( _mail )
+        pass
     
 
     def __retrive_a_mail(self, index):
         # retr() returns [response, lines of content, octets]
         _lines = self.server.retr(index)[1]
         _mail_raw = b'\r\n'.join(_lines).decode('utf-8')
-
         print('Retrived a mail [OK].')
 
         return _mail_raw
     
 
     def export_all_mails(self):
-        pass
-    
-    def get_last_mails(self, amount):
         pass
     
     
