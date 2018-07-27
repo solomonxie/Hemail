@@ -8,6 +8,7 @@ class EmailPy:
         self.email_password = psw
         self.pop3 = pop3
         self.server = None
+        self.count = 0
         self.mails = []
     
     def login(self):
@@ -40,11 +41,11 @@ class EmailPy:
     def get_all_mails(self):
         # list() returns [response, raw, octets]
         _all_mails_raw = self.server.list()[1]
+        self.count = len(_all_mails_raw)
+        print('Download the whole mail list [OK].')
 
-        print('Downloaded mail list [OK].')
-
-        for index in range(1, len(_all_mails_raw)):
-            _mail = Mail( self.__retrive_a_mail(index) )
+        for index in reversed(range(self.count)):
+            _mail = Mail( self.__retrive_a_mail(index+1) )
             self.mails.append( _mail )
     
 
@@ -53,7 +54,7 @@ class EmailPy:
         _lines = self.server.retr(index)[1]
         _mail_raw = b'\r\n'.join(_lines).decode('utf-8')
 
-        print('Downloaded a mail [OK].')
+        print('Retrived a mail [OK].')
 
         return _mail_raw
     

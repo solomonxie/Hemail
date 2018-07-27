@@ -1,5 +1,4 @@
 
-
 import os
 import json
 from emailpy import EmailPy
@@ -12,7 +11,7 @@ def main():
     with open(path, 'r') as f:
         servers = json.loads(f.read())
 
-    # Choose a "Receiver Server" which we're gonna download from
+    # Choose an "Email Server" on which we're downloding
     _re = servers['receivers'][0]
     
     server = EmailPy(_re['email'], _re['password'], _re['server'])
