@@ -4,7 +4,14 @@ from email.utils import parseaddr
 
 class Mail:
     """
-    Parse email data to human readable form
+    Parse email data to human readable form.
+    Only process given Email message, inc:
+    - Parse header informations
+    - Parse main content (text/html)
+    - Load attachements
+    Not including:
+    - ✗ Connect with server
+    - ✗ 
     """
     def __init__(self, mail_raw, level=0):
         self._msg = Parser().parsestr(mail_raw)  #ret: [EmailMessage]
@@ -28,10 +35,7 @@ class Mail:
         if self._msg.is_multipart() is True:
             self.__load_nested_parts()
         else:
-            if self.filename is None:
-                self.__load_content()
-            else:
-                self.__load_attachements()
+            self.__load_content()
 
     
     def __load_header(self):
@@ -51,8 +55,16 @@ class Mail:
 
 
     def __load_nested_parts(self):
-        _sub_mail = Mail( '', self.level+1 )
-        self.content += _sub_mail.content
+        # _sub_mail = Mail( '', self.level+1 )
+        # self.content += _sub_mail.content
+        # if self.filename is not None:
+        #     self.__load_attachements()
+        
+        # Recursively peel out skins until get real content
+        for _sub in self._msg.walk():
+            print(_sub.get_content_type())
+
+        pass
 
     
     
