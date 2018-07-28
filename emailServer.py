@@ -16,7 +16,7 @@ class EmailServer:
         self.email_address = address
         self.email_password = password
         self.pop3 = pop3
-        self.server = None
+        self._server = None
         self.count = 0
         self.mails = []
     
@@ -45,25 +45,25 @@ class EmailServer:
         # Show current server status
         # print('Messages: %s. Size: %s' % server.stat())
 
-        self.server = _server
+        self._server = _server
 
         # Get Email Server states
         # list() returns [response, raw, octets]
-        _all_mails_raw = self.server.list()[1]
+        _all_mails_raw = self._server.list()[1]
         self.count = len(_all_mails_raw)
         print('Download the whole mail list [OK].')
     
     def logout(self):
         # Close connection with server
-        self.server.quit()
-        self.server = None
+        self._server.quit()
+        self._server = None
         print('Logged out from server [Bye].')
     
 
     def get_all_mails(self):
         self.get_latest_mails(self.count)
-        # or 
-        self.get_earliest_mails(self.count)
+        # or in reversed order
+        #self.get_earliest_mails(self.count)
     
 
     def get_latest_mails(self, amount=1):
@@ -72,7 +72,6 @@ class EmailServer:
         for index in range(self.count, self.count-amount, -1):
             _mail = Mail( self.__retrive_a_mail(index) )
             self.mails.append( _mail )
-        pass
     
     def get_earliest_mails(self, amount=1):
         for index in range(0, amount):
@@ -82,7 +81,7 @@ class EmailServer:
 
     def __retrive_a_mail(self, index):
         # retr() returns [response, lines of content, octets]
-        _lines = self.server.retr(index)[1]
+        _lines = self._server.retr(index)[1]
         _mail_raw = b'\r\n'.join(_lines).decode('utf-8')
         print('Retrived a mail [OK].')
 
@@ -100,4 +99,4 @@ class EmailServer:
     
     def __delete_a_mail(self, index):
         # Delete mail from server
-        self.server.dele(index)
+        self._server.dele(index)

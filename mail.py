@@ -85,9 +85,8 @@ class Mail:
             self.htmls.append(_content)
     
 
-    def export(self, path=''):
-        if path:
-            self.export_path = f'{path}/mails/{self.name}/'
+    def export(self, path):
+        self.export_path = f'{path}/mails/{self.name}/'
         if os.path.exists(self.export_path) is False:
             os.makedirs(self.export_path)
         print('Exporting this mail to: ', self.export_path)
@@ -140,11 +139,15 @@ class Mail:
         _raw_text = part.get_payload()
 
         # 1. Get the Transfer-Encoding method
-        _transfer = part.get('Content-Transfer-Encoding').lower()
+        _transfer = part.get('Content-Transfer-Encoding')
+        _transfer = _transfer.lower() if _transfer else ''
         
         # 2. Get the Charset for decoding
-        _result = re.findall(r'charset\s?=\s?"?(.+)?"\s*$', part.get('Content-Type'))
-        _charset = _result[0] if _result else 'utf-8'
+        _ctype = part.get('Content-Type')
+        __result = re.findall(r'charset\s?=\s?\"?([\w-]+)\"?\s*$', _ctype)
+        _charset = __result[0] if __result else 'utf-8'
+
+        print(f'[Trans: {_transfer}] [Ctype: {_ctype}] [Char: {_charset}]')
 
         # 3. Convert & Decode text according to the setups
         if 'bit' in _transfer:
@@ -153,5 +156,7 @@ class Mail:
             _content = base64.b64decode(_raw_text).decode(_charset)
         elif 'quoted-printable' in _transfer:
             _content = quopri.decodestring(_raw_text).decode(_charset)
+        else:
+            _content = _raw_text
         
         return _content
