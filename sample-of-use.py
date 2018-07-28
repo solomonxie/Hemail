@@ -17,8 +17,10 @@ def main():
 
     # Download & parse data from email server
     server.login()
-    server.get_all_mails()
-    # server.get_last_mails(1)
+    # server.get_all_mails()
+    server.get_latest_mails()
+    # server.get_earliest_mails()
+    server.export_mails('../../tests/email/mails/')
     server.logout()
 
 if __name__ == '__main__':

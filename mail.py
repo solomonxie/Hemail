@@ -1,3 +1,6 @@
+import os
+import base64
+
 from email.parser import Parser
 from email.header import decode_header
 from email.utils import parseaddr
@@ -13,31 +16,32 @@ class Mail:
     - ✗ Connect with server
     - ✗ 
     """
-    def __init__(self, mail_raw, level=0):
-        self._msg = Parser().parsestr(mail_raw)  #ret: [EmailMessage]
-        self.level = level  # Nested level
-        self.format = self._msg.get_content_type()
-        self.filename = self._msg.get_filename()
-        print(f'Level {self.level}')
+    def __init__(self, mail_raw):
+        #Get object: [email.message.Message]
+        self._mail_raw = mail_raw
+        self._msg = Parser().parsestr(mail_raw)  
+        self.id = self._msg.get('Message-ID')
 
         # Headers
         self.from_ = ''
         self.to = ''
         self.subject = ''
         self.date = None
-
-        # Data to be loaded
         self.header = ''
-        self.content = ''  # All text|html content
-        self.attachements = []
-
         self.__load_header()
-        if self._msg.is_multipart() is True:
-            self.__load_nested_parts()
-        else:
-            self.__load_content()
 
-    
+        # Real content
+        self.texts = []  # All text/plain content
+        self.htmls = []  # All text/html content
+        self.attachements = []
+        self.export_path = ''
+
+        if self._msg.is_multipart() is True:
+            self.__load_multi_parts()
+        else:
+            self.__load_text(self._msg)
+
+
     def __load_header(self):
         self.from_ = self.__decode_header(self._msg.get('From'))
         self.to = self.__decode_header(self._msg.get('To'))
@@ -48,50 +52,77 @@ class Mail:
         print(self.header)
 
 
-    def __load_content(self):
-        if self.format is 'text/plain' or 'text/html':
-            content = self._msg.get_payload()
-            print(content)
-
-
-    def __load_nested_parts(self):
-        # _sub_mail = Mail( '', self.level+1 )
-        # self.content += _sub_mail.content
-        # if self.filename is not None:
-        #     self.__load_attachements()
-        
-        # Recursively peel out skins until get real content
-        for _sub in self._msg.walk():
-            print(_sub.get_content_type())
-
-        pass
-
-    
-    
-    def __load_nested_content_as_one(self):
+    def __load_multi_parts(self):
         """
-        We don't really need to take each 
-        sub-content as a single object,
-        but only need all readable content as one, 
-        and treat all others as attachements.
+        Recursively peel out skins until get real content,
+        raise up depth-levl when it's multipart,
+        and ignore all Framework parts
         """
-        print('Nested email.')
-        for m in self._msg.walk():
-            print(' '*4, m.get_content_type())
-        pass
+        _depth = 0
+        for _part in self._msg.walk():
+            if _part.get_content_maintype() == 'multipart':
+                _depth += 1
+                continue
+            # Load Real content
+            if _part.get_content_maintype() == 'text':
+                self.__load_text(_part, _depth)
+            elif _part.get_content_disposition() == 'attachment':
+                self.attachements.append(_part)
+
+
+    def __load_text(self, part, depth=0):
+        _content = self.__decode_payload(part.get_payload())
+        print(f'[Depth:{depth}][Text content:{len(_content)}]')
+
+        _subtype = part.get_content_subtype()
+        if _subtype == 'plain':
+            self.texts.append(_content)
+        elif _subtype == 'html':
+            self.htmls.append(_content)
     
 
-    def __load_attachements(self):
-        print('[Attachements.]')
+    def export(self, path):
+        self.export_path = f'{path}/{self.id}/'
+        if os.path.exists(self.export_path) is False:
+            os.makedirs(self.export_path)
+        print('Exporting this mail to: ', self.export_path)
+
+        with open(self.export_path+'raw.txt', 'w') as f:
+            f.write(self._mail_raw)
+        self.__export_content()
+        self.__export_attachements()
+
+
+    def __export_content(self):
+        with open(self.export_path+'content.html', 'w') as f:
+            f.write('\n\n'.join(self.htmls))
+        with open(self.export_path+'text.txt', 'w') as f:
+            f.write('\n\n'.join(self.texts))
+        pass
+
+    def __export_attachements(self):
+        for _file in self.attachements:
+            _filename = self.__decode_header(_file.get_filename())
+            _payload = base64.b64decode(_file.get_payload())
+            with open(self.export_path+_filename, 'wb') as f:
+                f.write(_payload)
+
+            print(f'[Attachement({_file.get_content_type()})]:{_filename}')
         pass
         
+
+
 
     def __decode_header(self, raw):
-        """ Decode mail raw string to readable text"""
+        """ Decode raw headers to readable text"""
+        if raw is None:
+            return ''
         content, charset = decode_header(raw)[0]
         text = content.decode(charset) if charset else raw
         return text
     
 
     def __decode_payload(self, raw):
-        return raw
+        # Decode b64 -> decode unicode -> original text
+        _readable = base64.b64decode(raw).decode('utf-8')
+        return _readable
