@@ -1,3 +1,4 @@
+import os
 import poplib
 
 from mail import Mail
@@ -53,16 +54,23 @@ class EmailServer:
     
 
     def get_all_mails(self):
-        self.get_last_mails(self.count)
+        self.get_latest_mails(self.count)
+        # or 
+        self.get_earliest_mails(self.count)
     
 
-    def get_last_mails(self, amount):
+    def get_latest_mails(self, amount=1):
         # Make up a reversed index-list,
         # etc, mail list is [3,2,1] but we onlly need [3,2]
         for index in range(self.count, self.count-amount, -1):
             _mail = Mail( self.__retrive_a_mail(index) )
             self.mails.append( _mail )
         pass
+    
+    def get_earliest_mails(self, amount=1):
+        for index in range(0, amount):
+            _mail = Mail( self.__retrive_a_mail(index+1) )
+            self.mails.append( _mail )
     
 
     def __retrive_a_mail(self, index):
@@ -74,14 +82,15 @@ class EmailServer:
         return _mail_raw
     
 
-    def export_all_mails(self):
-        pass
+    def export_mails(self, path=''):
+        if os.path.exists(path) is False:
+            print('Export path is incorrect.')
+            return False 
+
+        for _mail in self.mails:
+            _mail.export(path)
     
     
-    def export_last_mails(self, amount):
-        pass
-
-
     def __delete_a_mail(self, index):
         # Delete mail from server
         self.server.dele(index)
