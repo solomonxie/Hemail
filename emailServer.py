@@ -22,18 +22,25 @@ class EmailServer:
     
     def login(self):
         # Connect with server
-        _server = poplib.POP3(self.pop3)
-        # Print welcome message
-        print(_server.getwelcome().decode('utf-8'))
-        print('Contact with server [OK].')
+        try:
+            _server = poplib.POP3(self.pop3)
+            _server.set_debuglevel(1)
 
-        # Set debug level for showing more info
-        # _server.set_debuglevel(1)
+            # Print welcome message
+            print(_server.getwelcome().decode('utf-8'))
+            print('Contact with server [OK].')
+        except BaseException as e:
+            print('Fail to connect with server. Please check the server settings or internet status.')
+            print(e)
         
         # Authentication
-        _server.user(self.email_address)
-        _server.pass_(self.email_password)
-        print('Login to server [OK].')
+        try:
+            _server.user(self.email_address)
+            _server.pass_(self.email_password)
+            print('Login to server [OK].')
+        except BaseException as e:
+            print('Fail to login. Please check your username & password.')
+            print(e)
 
         # Show current server status
         # print('Messages: %s. Size: %s' % server.stat())

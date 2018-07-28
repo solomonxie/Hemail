@@ -1,5 +1,7 @@
 import os
+import re
 import base64
+import quopri
 
 from email.parser import Parser
 from email.header import decode_header
@@ -19,14 +21,14 @@ class Mail:
     def __init__(self, mail_raw):
         #Get object: [email.message.Message]
         self._mail_raw = mail_raw
-        self._msg = Parser().parsestr(mail_raw)  
-        self.id = self._msg.get('Message-ID')
+        self._msg = Parser().parsestr(mail_raw)
 
         # Headers
         self.from_ = ''
         self.to = ''
         self.subject = ''
         self.date = None
+        self.name = ''
         self.header = ''
         self.__load_header()
 
@@ -34,7 +36,8 @@ class Mail:
         self.texts = []  # All text/plain content
         self.htmls = []  # All text/html content
         self.attachements = []
-        self.export_path = ''
+        # Export to user folder by default
+        self.export_path = os.path.expanduser('~/')+self.name
 
         if self._msg.is_multipart() is True:
             self.__load_multi_parts()
@@ -47,8 +50,9 @@ class Mail:
         self.to = self.__decode_header(self._msg.get('To'))
         self.subject = self.__decode_header(self._msg.get('Subject'))
         self.date = self.__decode_header(self._msg.get('Date'))
+        self.name = self.date +' '+ self.subject
 
-        self.header = f'From: {self.from_}\nTo: {self.to}\nTime: {self.date}\nSubject: {self.subject}'
+        self.header = f'{"-"*10}\nFrom: {self.from_}\nTo: {self.to}\nTime: {self.date}\nSubject: {self.subject}\n{"-"*10}'
         print(self.header)
 
 
@@ -71,7 +75,7 @@ class Mail:
 
 
     def __load_text(self, part, depth=0):
-        _content = self.__decode_payload(part.get_payload())
+        _content = self.__decode_text(part)
         print(f'[Depth:{depth}][Text content:{len(_content)}]')
 
         _subtype = part.get_content_subtype()
@@ -81,22 +85,25 @@ class Mail:
             self.htmls.append(_content)
     
 
-    def export(self, path):
-        self.export_path = f'{path}/{self.id}/'
+    def export(self, path=''):
+        if path:
+            self.export_path = f'{path}/mails/{self.name}/'
         if os.path.exists(self.export_path) is False:
             os.makedirs(self.export_path)
         print('Exporting this mail to: ', self.export_path)
 
-        with open(self.export_path+'raw.txt', 'w') as f:
-            f.write(self._mail_raw)
+        self.__export_raw()
         self.__export_content()
         self.__export_attachements()
 
+    def __export_raw(self):
+        with open(self.export_path+'raw.eml', 'w') as f:
+            f.write(self._mail_raw)
 
     def __export_content(self):
         with open(self.export_path+'content.html', 'w') as f:
             f.write('\n\n'.join(self.htmls))
-        with open(self.export_path+'text.txt', 'w') as f:
+        with open(self.export_path+'content.txt', 'w') as f:
             f.write('\n\n'.join(self.texts))
         pass
 
@@ -112,7 +119,6 @@ class Mail:
         
 
 
-
     def __decode_header(self, raw):
         """ Decode raw headers to readable text"""
         if raw is None:
@@ -122,7 +128,30 @@ class Mail:
         return text
     
 
-    def __decode_payload(self, raw):
-        # Decode b64 -> decode unicode -> original text
-        _readable = base64.b64decode(raw).decode('utf-8')
-        return _readable
+    def __get_charset(self, part):
+        # Get its charset for decoding
+        _matches = re.findall(r'charset\s?=\s?"?(.+)"?', part.get('Content-Type'))
+        _charset = _matches[0] if _matches else 'UTF-8'
+        return _charset
+
+
+    def __decode_text(self, part):
+        _content = ''
+        _raw_text = part.get_payload()
+
+        # 1. Get the Transfer-Encoding method
+        _transfer = part.get('Content-Transfer-Encoding').lower()
+        
+        # 2. Get the Charset for decoding
+        _result = re.findall(r'charset\s?=\s?"?(.+)?"\s*$', part.get('Content-Type'))
+        _charset = _result[0] if _result else 'utf-8'
+
+        # 3. Convert & Decode text according to the setups
+        if 'bit' in _transfer:
+            _content = _raw_text
+        elif 'base64' in _transfer:
+            _content = base64.b64decode(_raw_text).decode(_charset)
+        elif 'quoted-printable' in _transfer:
+            _content = quopri.decodestring(_raw_text).decode(_charset)
+        
+        return _content
