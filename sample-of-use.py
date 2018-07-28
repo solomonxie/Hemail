@@ -5,7 +5,7 @@ from emailServer import EmailServer
 
 def main():
     # Load email server infomations
-    path = './email-servers.json'
+    path = '.local/email-servers.json'
     if os.path.islink(path) is True:
         path = os.readlink(path)
     with open(path, 'r') as f:
@@ -22,7 +22,7 @@ def main():
     server.get_all_mails()
     # server.get_latest_mails()
     # server.get_earliest_mails()
-    server.export_mails('../../tests/email/')
+    server.export_mails('.local/')
     server.logout()
 
 if __name__ == '__main__':
