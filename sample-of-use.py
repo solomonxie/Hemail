@@ -12,10 +12,10 @@ def main():
         servers = json.loads(f.read())
 
     # Choose an "Email Server" on which we're downloding
-    _re = servers['receivers'][1]
+    _re = servers['receivers'][0]
     server = EmailServer(_re['email'], _re['password'], _re['server'])
 
-    #import pdb;pdb.set_trace()
+    # import pdb;pdb.set_trace()
 
     # Download & parse data from email server
     server.login()
