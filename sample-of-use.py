@@ -1,7 +1,7 @@
 
 import os
 import json
-from emailServer import EmailServer
+from hemailServer import HemailServer
 
 def main():
     # Load email server infomations
@@ -13,7 +13,7 @@ def main():
 
     # Choose an "Email Server" on which we're downloding
     _re = servers['receivers'][0]
-    server = EmailServer(_re['email'], _re['password'], _re['server'])
+    server = HemailServer(_re['email'], _re['password'], _re['server'])
 
     # import pdb;pdb.set_trace()
 
