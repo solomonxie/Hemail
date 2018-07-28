@@ -37,7 +37,7 @@ class Mail:
         self.htmls = []  # All text/html content
         self.attachements = []
         # Export to user folder by default
-        self.export_path = os.path.expanduser('~/')+self.name
+        self.export_path = os.getcwd()+'/'+self.name
 
         if self._msg.is_multipart() is True:
             self.__load_multi_parts()
