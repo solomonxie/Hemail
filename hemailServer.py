@@ -3,7 +3,7 @@ import poplib
 
 from mail import Mail
 
-class EmailServer:
+class HemailServer:
     """
     Connect with Email Server, inc:
     - Login, logout
