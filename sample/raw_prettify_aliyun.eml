@@ -1,0 +1,157 @@
+X-Alimail-AntiSpam:AC = PASS;
+BC = -1|-1;
+BR = 01201311R521e2;
+CH = green;
+FP = 0|-1|-1|-1|0|-1|-1|-1;
+HT = e01f04452;
+MF = solomonxie@aliyun.com;
+NM = 1;
+PH = DW;
+RN = 1;
+RT = 1;
+SR = 0;
+TI = W4_5305839_DEFAULT_0AC264D3_1532690071843_o7001c65i;
+Received: from WS-web (solomonxie@aliyun.com[W4_5305839_DEFAULT_0AC264D3_1532690071843_o7001c65i]) by e01e07484.eu6 at Fri, 27 Jul 2018 19:14:31 +0800 
+
+
+
+Date: Fri, 27 Jul 2018 19:14:31 +0800 
+From: "solomonxie" 
+Return-Path: "solomonxie" 
+To: "Solomon Xie" 
+Reply-To: "solomonxie" 
+Message-ID: <9e79be3e-9236-4f72-9016-28584981c6a2.solomonxie@aliyun.com> 
+Subject:  = ?UTF-8?B?Rnc6IOS4reWbveW3peWVhumTtuihjOWuouaIt+Wvuei0puWNlShJQ0JDIFBlb255IENhcmQg? =   = ?UTF-8?B?QmFuayBTdGF0ZW1lbnQp? =  
+
+
+
+X-Mailer: [Alimail-Mailagent revision 7][W4_5305839][DEFAULT][Chrome] 
+MIME-Version: 1.0 
+Return-Path: 
+References: <1032333284.502091.1530429207702.JavaMail.wasup@pdccsumspapp077>,<28936236-c12b-49ed-941a-8a7d67347998.solomonxie@aliyun.com>, 
+In-Reply-To: 
+x-aliyun-mail-creator: W4_5305839_DEFAULT_NTMTW96aWxsYS81LjAgKE1hY2ludG9zaDsgSW50ZWwgTWFjIE9TIFggMTBfMTJfNikgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzY4LjAuMzQ0MC43NSBTYWZhcmkvNTM3LjM2XQ 
+
+
+
+
+Content-type: multipart/mixed; 
+  boundary = "---- = ALIBOUNDARY_01" 
+
+This is a multi-part message in MIME format. 
+
+------ = ALIBOUNDARY_01 
+
+    Content-type: multipart/related; 
+      boundary = "---- = ALIBOUNDARY_02" 
+
+    ------ = ALIBOUNDARY_02 
+
+        Content-type: multipart/alternative; 
+          boundary = "---- = ALIBOUNDARY_03" 
+
+
+        ------ = ALIBOUNDARY_03
+
+            Content-type: text/plain; 
+              charset = "UTF-8" 
+
+            Content-Transfer-Encoding: base64 
+
+            <这里是很长的一段base64压缩编码> 
+
+        ------ = ALIBOUNDARY_03
+
+            Content-type: text/html;
+
+            charset = "UTF-8" 
+
+            Content-Transfer-Encoding: base64 
+
+            <这里是很长的一段base64压缩编码>
+
+        ------ = ALIBOUNDARY_03-- 
+
+    ------ = ALIBOUNDARY_02 
+
+            Content-type: application/octet-stream
+
+            Content-Disposition: inline;
+
+            Content-ID: <__aliyun153269007184876201> 
+
+            Filename = " = ?UTF-8?B?YXR0MDAwLmpwZWc = ? = " 
+
+            Content-Transfer-Encoding: base64
+
+                <这里是很长的一段base64压缩编码>
+
+    ------ = ALIBOUNDARY_02 
+
+            Content-type: application/octet-stream 
+
+            Content-Disposition: inline;
+
+            Content-ID: <__aliyun153269007184876202> 
+
+            Filename = " = ?UTF-8?B?YXR0MDAxLmpwZWc = ? = " 
+
+            Content-Transfer-Encoding: base64 
+
+                <这里是很长的一段base64压缩编码>
+
+    ------ = ALIBOUNDARY_02 
+
+            Content-type: application/octet-stream 
+
+            Content-Disposition: inline;
+
+            Content-ID: <__aliyun153269007184876203> 
+
+            Filename = " = ?UTF-8?B?YXR0MDAyLmpwZWc = ? = " 
+
+            Content-Transfer-Encoding: base64 
+
+                <这里是很长的一段base64压缩编码>
+
+    ------ = ALIBOUNDARY_02 
+
+            Content-type: application/octet-stream 
+
+            Content-Disposition: inline;
+
+            Content-ID: <__aliyun153269007184876204> 
+
+            Filename = " = ?UTF-8?B?YXR0MDAzLmpwZWc = ? = " 
+
+            Content-Transfer-Encoding: base64 
+
+                <这里是很长的一段base64压缩编码>
+
+    ------ = ALIBOUNDARY_02
+
+------ = ALIBOUNDARY_01 
+
+    Content-type: application/octet-stream 
+
+    Content-Disposition: attachment;
+
+    Filename = " = ?UTF-8?B?KOWcsOW/g+WOhumZqeiusDJfQkQucm12YilbMDAuMDQuMTguNTY5XS5qcGc = ? = " 
+
+    Content-Transfer-Encoding: base64 
+
+        <这里是很长的一段base64压缩编码>
+
+------ = ALIBOUNDARY_01 
+
+    Content-type: application/octet-stream 
+
+    Content-Disposition: attachment;
+
+    Filename = " = ?UTF-8?B?W0cuSS5BLk4uVF1bZGFybGktZnJhXVsxM11bNzIwcF1bQ0hTXS0wMDAxLmpwZw =  = ? = " 
+
+    Content-Transfer-Encoding: base64 
+
+        <这里是很长的一段base64压缩编码>
+
+------ = ALIBOUNDARY_01--
