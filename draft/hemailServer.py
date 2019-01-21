@@ -1,5 +1,7 @@
 import os
+import json
 import poplib
+import yagmail
 
 from mail import Mail
 
@@ -12,18 +14,28 @@ class HemailServer:
     Not including:
     - ✗ Mail parsing
     """
-    def __init__(self, address=None, password=None, pop3=None):
-        self.email_address = address
-        self.email_password = password
-        self.pop3 = pop3
+    def __init__(self, cfg_path):
         self._server = None
         self.count = 0
         self.mails = []
+
+        self.__load_configs(cfg_path)
     
+    def __load_configs(self, path):
+        # Load email server infomations
+        path = '.local/email-servers.json'
+        if os.path.islink(path) is True:
+            path = os.readlink(path)
+        with open(path, 'r') as f:
+            servers = json.loads(f.read())
+        
+        self._sender = servers['senders'][0]
+        self._receiver = servers['receivers'][0]
+        
     def login(self):
         # Connect with server
         try:
-            _server = poplib.POP3(self.pop3)
+            _server = poplib.POP3(self._receiver['server'])
             _server.set_debuglevel(1)
 
             # Print welcome message
@@ -35,8 +47,8 @@ class HemailServer:
         
         # Authentication
         try:
-            _server.user(self.email_address)
-            _server.pass_(self.email_password)
+            _server.user(self._receiver['email'])
+            _server.pass_(self._receiver['password'])
             print('Login to server [OK].')
         except BaseException as e:
             print('Fail to login. Please check your username & password.')
@@ -100,3 +112,37 @@ class HemailServer:
     def __delete_a_mail(self, index):
         # Delete mail from server
         self._server.dele(index)
+    
+
+    def send_mail(self):
+        # Load content
+        with open('sample/review_list.csv', 'r') as f:
+            file_list = [line.split(',') for line in f.read().split('\n')]
+
+        title = file_list[0][4]
+        path = file_list[0][5]
+
+        with open(path, 'r') as f:
+            content = f.read()
+
+            
+            
+        # Load Sender-Server
+        path = '.local/email-servers.json'
+        if os.path.islink(path) is True:
+            path = os.readlink(path)
+        with open(path, 'r') as f:
+            servers = json.loads(f.read())
+
+        # Choose an "Email Server" on which we're downloding
+        _sender = servers['senders'][0]
+
+
+        # Login & Send mail
+        yag = yagmail.SMTP(_sender['email'], _sender['password'], host=_sender['server'])
+        contents = [
+            content
+        ]
+        yag.send('solomonxie@outlook.com', title, contents)
+
+        print(title, '[OK]')
