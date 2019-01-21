@@ -1,0 +1,43 @@
+<h1 id="python操作git库-gitpython">Python操作Git库 <code>GitPython</code></h1>
+<p><a href="http://note.qidong.name/2018/01/gitpython/">参考文章</a> <a href="http://www.cnblogs.com/baiyangcao/p/gitpython.html">参考文章</a> <a href="https://my.oschina.net/hopeMan/blog/141221">复杂点的参考</a></p>
+<p>试了一圈发现，git库的用法设置非常符合原生git命令，只不过之间加了个<code>.</code>而已。 比如原本命令行里是<code>git add .</code>，这里就是<code>repo.git.add('.')</code>， 原本是<code>git commit -m &quot;信息&quot;</code>，这里就是<code>repo.git.commit(m='信息')</code> 可以说减少了很多学习时间，基本上我很多都是没参考文档自己猜出来的也能用。</p>
+<pre><code>sudo pip install gitpython</code></pre>
+<p>库安装好后可以直接在python中用了。</p>
+<h3 id="创建识别克隆仓库">创建、识别、克隆仓库</h3>
+<p>文件夹地址可以是全路径，也可以是<code>.</code>当前文件夹、<code>../</code>上级文件夹等用法。</p>
+<pre><code># 在文件夹里新建一个仓库，如果已存在git仓库也不报错不覆盖没问题
+repo = git.Repo.init(path=&#39;文件夹地址&#39;)
+
+# 选择已有仓库
+repo = git.Repo( &#39;仓库地址&#39; )
+
+# 克隆仓库
+repo = git.Repo.clone_from(url=&#39;git@github.com:USER/REPO.git&#39;, to_path=&#39;../new&#39;)</code></pre>
+<h3 id="常用语句">常用语句：</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># 查看repo状态</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="bu">print</span> repo.git.status()   <span class="co"># 返回通常的status几句信息</span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="bu">print</span> repo.is_dirty()    <span class="co"># 返回是否有改动（包括未add和未commit的）</span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co"># 添加文件 可以是单个文件名，也可以是`[ ]`数组，还可以是`.`代表全部</span></a>
+<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="bu">print</span> repo.git.add( <span class="st">&#39;文件名&#39;</span> )</a>
+<a class="sourceLine" id="cb3-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="co"># commit提交</span></a>
+<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="bu">print</span> repo.git.commit( m<span class="op">=</span><span class="st">&#39;提交信息&#39;</span> )</a></code></pre></div>
+<h3 id="远程交互操作">远程交互操作</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># 创建remote：</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">remote <span class="op">=</span> repo.create_remote(name<span class="op">=</span><span class="st">&#39;gitlab&#39;</span>, url<span class="op">=</span><span class="st">&#39;git@gitlab.com:USER/REPO.git&#39;</span>)</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="co"># 远程交互：</span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">remote <span class="op">=</span> repo.remote()</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">remote.fetch()</a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">remote.pull()</a>
+<a class="sourceLine" id="cb4-8" data-line-number="8">remote.push()</a></code></pre></div>
+<h3 id="实验效果">实验效果</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb5-1" data-line-number="1"> <span class="co"># 原意是返回工作区是否改变的状态</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="co"># 但是测试发现，工作区有变动它返回False，没变动却返回True</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="bu">print</span> repo.is_dirty()</a></code></pre></div>
+<h3 id="生成tar压缩包">生成tar压缩包</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co"># 压缩到 tar 文件</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="cf">with</span> <span class="bu">open</span>(<span class="st">&#39;repo.tar&#39;</span>, <span class="st">&#39;wb&#39;</span>) <span class="im">as</span> fp:</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">    repo.archive(fp)</a></code></pre></div>
+<h1 id="section"></h1>
